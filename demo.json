@@ -1,0 +1,24 @@
+
+
+
+// {
+//   "from_id":
+//     {"id":
+//     {"timestamp": "timestamp",
+//     "sender" : "sender",
+//     "message": "message"},
+
+//     "id1":{"timestamp": "timestamp",
+//       "sender" : "sender",
+//       "message": "message"}
+// }
+
+
+
+
+
+{"0": {'timestamp': datetime.datetime(2021, 9, 26, 10, 54, 52, 188179), 
+  'sender': '112342845020655906267', 
+  'message': 'Hello KIIT'}, 
+1: {'timestamp': datetime.datetime(2021, 9, 26, 10, 56, 7, 156378), 'sender': '112342845020655906267', 'message': 'Hello KIIT2'}, 
+2: {'timestamp': datetime.datetime(2021, 9, 26, 10, 56, 7, 157408), 'sender': '117634559943903595921', 'message': 'Hello Gulugulu'}}

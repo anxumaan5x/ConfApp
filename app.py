@@ -1,14 +1,86 @@
+from enum import unique
 import os
 import pathlib
+from flask.helpers import get_load_dotenv
 import requests
-from flask import Flask, session, abort, redirect, request, render_template
+from datetime import datetime, time
+import timedelta
+from flask import Flask, session, abort, redirect, request, render_template, url_for
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
-
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import backref
 app = Flask("Google Login App")
 app.secret_key = "ddsdadw"
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///db.sqlite3'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db=SQLAlchemy(app)
+
+class User(db.Model):
+    __tablename__ = 'user'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name=db.Column(db.String(50), nullable=False)
+    google_id=db.Column(db.String(30), unique=True, nullable=False)
+
+    chats = db.relationship('Chat', backref='user')
+
+class Chat(db.Model):
+    __tablename__ = 'chat'
+    id = db.Column(db.Integer, primary_key=True)
+    message=db.Column(db.String(1000), nullable=False)
+    from_id=db.Column(db.String(30), db.ForeignKey('user.google_id'), nullable=False)
+    to_id=db.Column(db.String(30), nullable=False)
+    time=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+def get_chats(from_id='112342845020655906267', to_id='1424567895645321456545'):
+    timenow = datetime.now()
+# # printing initial_date
+# print (ini_time_for_now)
+    
+    my_list=[from_id, to_id]
+    reversed_list=my_list
+    reversed_list.reverse()
+    # my_dict={{}}
+    chats_dict={}
+    get_chat=Chat.query.filter(Chat.from_id.in_(my_list),Chat.to_id.in_(reversed_list)).order_by(Chat.time.asc()).all()
+    index=0
+    for chat in get_chat:
+        chats_dict[index]={}
+        # print(f'{chat.message}, Sender = {chat.user.name}, time = {chat.time}')
+        td = timedelta.Timedelta(timenow - chat.time)
+        if td.total.hours<1:
+            chats_dict[index]["timestamp"]=str(td.total.seconds) + ' seconds '
+        elif td.total.hours<24:
+            chats_dict[index]["timestamp"]=str(td.total.hours) + ' hour '
+        else:
+            chats_dict[index]["timestamp"]=str(td.total.days) + ' days '
+        chats_dict[index]["sender"] = chat.from_id
+        chats_dict[index]["message"] = chat.message   
+        index=index+1  
+    return chats_dict
+    # print(chats_dict)
+    
+
+
+#get all chats for one user
+def all_chats(to_id='112342845020655906267'):
+    get_chat=Chat.query.filter_by(to_id=to_id).group_by(Chat.from_id).all()
+    my_dict={}
+    user_received_chats_from=[]
+    # print(get_chat)
+    for chat in get_chat:
+        user_received_chats_from.append(chat.from_id)
+    for sender in user_received_chats_from:
+        # print(f'Chats between {to_id} and {sender}')
+        my_dict[sender]=get_chats(sender, to_id)        
+        print("")
+    # print(my_dict)
+    return my_dict
+    print(user_received_chats_from)
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
@@ -22,12 +94,25 @@ flow = Flow.from_client_secrets_file(
 )
 
 
+# def login_is_required(function):
+#     def wrapper(*args, **kwargs):
+#         if "google_id" not in session:
+#             return redirect('/login') # Authorization required
+#         else:
+#             return function()
+#     return wrapper
+
+requestor = ''
+
 def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:
-            return abort(401)  # Authorization required
+            global requestor
+            requestor=request.path
+            print('Requestor: ' + requestor, flush=True)
+            return redirect('/login') # Authorization required
         else:
-            return function()
+            return function(*args, **kwargs)
     return wrapper
 
 
@@ -55,10 +140,19 @@ def callback():
         request=token_request,
         audience=GOOGLE_CLIENT_ID
     )
-
+    
     session["google_id"] = id_info.get("sub")
     session["name"] = id_info.get("name")
-    return redirect("/protected_area")
+    print(session["name"], session["google_id"], flush=True)
+    query_user=User.query.filter_by(google_id=session['google_id']).first()
+    if query_user is None:
+        new_user=User(name=session['name'], google_id=session['google_id'])
+        db.session.add(new_user)
+        db.session.commit()
+    global requestor
+    return redirect(requestor)
+
+
 
 
 @app.route("/logout")
@@ -67,16 +161,46 @@ def logout():
     return redirect("/")
 
 
-@app.route("/")
-def index():
-    return render_template('login.html')
+# @app.route("/")
+# def index():
+#     return render_template('login.html')
 
-
-@app.route("/protected_area")
+@app.route('/<user_id>', methods=['GET', 'POST'])
 @login_is_required
-def protected_area():
-    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+def user_dashboard(user_id):
+    
+    if session["google_id"]==user_id:
+        if request.method == 'POST':
+            message = request.form['message']
+            sendto=request.form['send']
+            # print(sendto, flush=True)
+            newchat=Chat(message=message, from_id=session["google_id"], to_id=sendto)
+            db.session.add(newchat)
+            db.session.commit()
+        chats=all_chats()
+        return render_template('dashboard.html', chats = chats, me=session["google_id"])
+
+    else:
+        query_user=User.query.filter_by(google_id=user_id).first()
+        # return f"<h1>Hello {query_user.name}</h1>"
+        return "Hello"
+    # print(chats)
+    
 
 
+# @app.route('/')
+# def home():
+#     return redirect('/' + session['google_id'])
+
+
+# @app.route("/protected_area")
+# @login_is_required
+# def protected_area():
+#     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+
+@app.route("/req")
+def req():
+    global requestor
+    return f'<h1>Requestor is {requestor}</h1>'
 if __name__ == "__main__":
     app.run()
