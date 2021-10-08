@@ -1,6 +1,7 @@
 from enum import unique
 import os
 import pathlib
+import re
 from flask.helpers import get_load_dotenv
 import requests
 from datetime import datetime, time
@@ -17,6 +18,14 @@ app.secret_key = "ddsdadw"
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db=SQLAlchemy(app)
+
+import os
+from flask import send_from_directory
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -37,7 +46,7 @@ class Chat(db.Model):
 
 
 def get_chats(from_id='112342845020655906267', to_id='1424567895645321456545'):
-    timenow = datetime.now()
+    timenow = datetime.utcnow()
 # # printing initial_date
 # print (ini_time_for_now)
     
@@ -52,9 +61,9 @@ def get_chats(from_id='112342845020655906267', to_id='1424567895645321456545'):
         chats_dict[index]={}
         # print(f'{chat.message}, Sender = {chat.user.name}, time = {chat.time}')
         td = timedelta.Timedelta(timenow - chat.time)
-        if td.total.hours<1:
-            chats_dict[index]["timestamp"]=str(td.total.seconds) + ' seconds '
-        elif td.total.hours<24:
+        if td.total.hours<=1:
+            chats_dict[index]["timestamp"]=str(td.total.minutes) + ' minutes '
+        elif td.total.hours<=24:
             chats_dict[index]["timestamp"]=str(td.total.hours) + ' hour '
         else:
             chats_dict[index]["timestamp"]=str(td.total.days) + ' days '
@@ -113,7 +122,9 @@ def login_is_required(function):
             return redirect('/login') # Authorization required
         else:
             return function(*args, **kwargs)
+    wrapper.__name__ = function.__name__
     return wrapper
+
 
 
 @app.route("/login")
@@ -150,7 +161,11 @@ def callback():
         db.session.add(new_user)
         db.session.commit()
     global requestor
-    return redirect(requestor)
+    print('Requestor is ' + requestor, flush=True)
+    if requestor:
+        return redirect(requestor)
+    print("Tring to access " + '/' + session['google_id'], flush=True)
+    return redirect('/' + session['google_id'])
 
 
 
@@ -158,17 +173,16 @@ def callback():
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("/")
+    return "Logged out"
 
 
-# @app.route("/")
-# def index():
-#     return render_template('login.html')
+@app.route("/")
+def index():
+    return redirect('/login')
 
 @app.route('/<user_id>', methods=['GET', 'POST'])
 @login_is_required
-def user_dashboard(user_id):
-    
+def user_dashboard(user_id):    
     if session["google_id"]==user_id:
         if request.method == 'POST':
             message = request.form['message']
@@ -177,13 +191,31 @@ def user_dashboard(user_id):
             newchat=Chat(message=message, from_id=session["google_id"], to_id=sendto)
             db.session.add(newchat)
             db.session.commit()
+            return redirect(url_for('user_dashboard', user_id=user_id))
         chats=all_chats()
         return render_template('dashboard.html', chats = chats, me=session["google_id"])
 
     else:
         query_user=User.query.filter_by(google_id=user_id).first()
-        # return f"<h1>Hello {query_user.name}</h1>"
-        return "Hello"
+        try:
+            
+            length=len(query_user.name.split(' ')[0])
+            user=query_user.name.split(' ')[0][0] + '*' * (length-1)
+        except:
+            return "User does not exist"
+        if request.method == 'POST':
+            message = request.form['message']
+            sendto=request.form['send']
+            # print(sendto, flush=True)
+            newchat=Chat(message=message, from_id=session["google_id"], to_id=sendto)
+            db.session.add(newchat)
+            db.session.commit()
+            return redirect(url_for('user_dashboard', user_id=user_id))
+        chatsBetweenUser=get_chats(user_id,session['google_id'])
+        # print(chatsBetweenUser, flush=True)
+        # return f"<h1>Hello {query_user.name[0]}</h1>"
+        return render_template('otheruser.html', chats = chatsBetweenUser, me=session["google_id"], user=user)
+        # return "Hello"
     # print(chats)
     
 
@@ -193,10 +225,10 @@ def user_dashboard(user_id):
 #     return redirect('/' + session['google_id'])
 
 
-# @app.route("/protected_area")
-# @login_is_required
-# def protected_area():
-#     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+@app.route("/def/protected_area")
+@login_is_required
+def protected_area():
+    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
 
 @app.route("/req")
 def req():
