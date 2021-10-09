@@ -73,6 +73,13 @@ class Chat(db.Model):
     to_id=db.Column(db.String(30), nullable=False)
     time=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+class Report(db.Model):
+    __tablename__ = 'reported'
+    id = db.Column(db.Integer, primary_key=True)
+    reported_by=db.Column(db.String(30), nullable=False)
+    reported=db.Column(db.String(30), nullable=False)
+    time=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
 
 def get_chats(from_id, to_id):
     timenow = datetime.utcnow()
@@ -218,6 +225,9 @@ def index():
 @login_is_required
 def user_dashboard(userstr):
     user_id=str(num_decode(userstr))
+    count=Report.query.filter_by(reported=session['google_id']).count()
+    if count>5:
+        return "You have been very naughty. And you got reported a lot"
     guser=User.query.filter_by(google_id=session["google_id"]).first()
     gname=guser.name.split(' ')[0]
     if session["google_id"]==user_id:
@@ -258,6 +268,16 @@ def user_dashboard(userstr):
         # return "Hello"
     # print(chats)
 
+@app.route('/report/<num>')
+def report(num):
+    try:
+        user_id=str(int(num))
+    except:
+        user_id=str(num_decode(num))
+    reports=Report(reported_by=session['google_id'], reported=user_id)
+    db.session.add(reports)
+    db.session.commit()
+    return "Reported"
 
     
 

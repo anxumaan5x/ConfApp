@@ -12,17 +12,17 @@
         border-radius: 10px;
         outline: none;
       }
-  
+
       input {
         cursor: default;
         border: 1px solid #354757;
         transition: all 0.3s ease-in-out;
       }
-  
+
       input:focus {
         border-color: #384f63;
       }
-  
+
       #copyBtn {
         cursor: pointer;
         color: #fff;
@@ -31,7 +31,7 @@
         margin-left: 10px;
         transition: all 0.3s ease-in-out;
       }
-  
+
       button:hover {
         background: #0d6efd;
         color: #fff;
@@ -122,7 +122,9 @@
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li> -->
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
+              <a class="nav-link active" aria-current="page" href="/logout"
+                >Logout</a
+              >
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/about">About</a>
@@ -133,14 +135,12 @@
     </nav>
     <div class="container">
       <div style="margin: 2rem; font-size: 16px; text-align: center">
-        <p>Hi <span style="font-weight: 500; font-size: 18px">{{name}}</span>!</p>
+        <p>
+          Hi <span style="font-weight: 500; font-size: 18px">{{name}}</span>!
+        </p>
         <p>Here is your publicly shareable link:</p>
         <div class="copytoclipboard">
-          <input
-            type="text"
-            id="copyText"
-            value="cooopy"
-          />
+          <input type="text" id="copyText" value="cooopy" />
           <button id="copyBtn"><i class="ph-copy"></i> Copy</button>
         </div>
       </div>
@@ -187,18 +187,14 @@
             style="width: 100%; box-sizing: border-box"
           ></textarea>
           <br />
-          <button
-            class="btn btn-primary"
-            type="submit"
-            name="send"
-            value="{{key}}"
-          >
-            Send a message
-          </button>
+          <a href='{{ url_for('report', num=key) }}' class="btn btn-danger">Report User</a>
+          <button class="btn btn-primary" type="submit" name="send" value="{{key}}" style="float: right;">Send a message</button>
+          
         </form>
       </div>
       {% endfor %}
     </div>
+    
     <script>
       const copyBtn = document.getElementById("copyBtn");
       const copyText = document.getElementById("copyText");

@@ -173,6 +173,7 @@
         <textarea rows="3" cols="50" name="message" id="message" value="message" style="width: 100%;
         box-sizing: border-box;"></textarea>
         <br>
+        <a href='' id='report' class="btn btn-danger">Report User</a>
         <button class="btn btn-primary" id="sendchat" type="submit" name="send" value="">Send a message</button>
       </form>
 
@@ -196,6 +197,8 @@
       var userid = location.href.split('/')[3];
       let key = document.getElementById('sendchat');
       key.value = userid;
+      let rep = document.getElementById('report');
+      rep.href = '/report/' + userid;
       var element = document.getElementById("chatbox");
       element.scrollTop = element.scrollHeight;
     </script>
