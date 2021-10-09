@@ -1,24 +1,35 @@
-# from datetime import datetime, timedelta
-  
-  
-# # Using current time
-# ini_time_for_now = datetime.utcnow()
-# # # printing initial_date
-# # print (ini_time_for_now)
-  
-# old=(ini_time_for_now - timedelta(minutes = 15))
-# print((ini_time_for_now-old).seconds//60)
-  
-# # future_date_after_2days = ini_time_for_now + \
-# #                          timedelta(days = 2)
-  
-# # # printing calculated future_dates
-# # print('future_date_after_2yrs:', str(future_date_after_2yrs))
-# # print('future_date_after_2days:', str(future_date_after_2days))
+# import lzstring
+# x = lzstring.LZString()
+# compress=x.compressToEncodedURIComponent('1424567895645321456523')
+# print(compress)
 
 
-name = "Anshuman Gogoi HH"
-length=len(name.split(' ')[0])
-usr=name.split(' ')[0][0] + '*' * (length-1)
 
-print(usr)
+import string
+ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
+           string.digits + '-_'
+ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
+BASE = len(ALPHABET)
+SIGN_CHARACTER = '$'
+
+def num_encode(n):
+    if n < 0:
+        return SIGN_CHARACTER + num_encode(-n)
+    s = []
+    while True:
+        n, r = divmod(n, BASE)
+        s.append(ALPHABET[r])
+        if n == 0: break
+    return ''.join(reversed(s))
+
+def num_decode(s):
+    if s[0] == SIGN_CHARACTER:
+        return -num_decode(s[1:])
+    n = 0
+    for c in s:
+        n = n * BASE + ALPHABET_REVERSE[c]
+    return n
+print(num_encode(112342845020655906267))
+
+
+BhcR9lQQ9O3b

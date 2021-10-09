@@ -5,119 +5,223 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+    <style>
+      #copyBtn,
+      input {
+        padding: 10px;
+        border-radius: 10px;
+        outline: none;
+      }
+  
+      input {
+        cursor: default;
+        border: 1px solid #354757;
+        transition: all 0.3s ease-in-out;
+      }
+  
+      input:focus {
+        border-color: #384f63;
+      }
+  
+      #copyBtn {
+        cursor: pointer;
+        color: #fff;
+        background: #1b2c3a;
+        border: none;
+        margin-left: 10px;
+        transition: all 0.3s ease-in-out;
+      }
+  
+      button:hover {
+        background: #0d6efd;
+        color: #fff;
+      }
+    </style>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF"
+      crossorigin="anonymous"
+    />
     <style>
       * {
-  font-family: 'Avenir';
-}
-.bubbleWrapper {
-	padding: 10px 10px;
-	display: flex;
-	justify-content: flex-end;
-	flex-direction: column;
-	align-self: flex-end;
-  color: #fff;
-}
-.inlineContainer {
-  display: inline-flex;
-}
-.inlineContainer.own {
-  flex-direction: row-reverse;
-}
-.inlineIcon {
-  width:20px;
-  object-fit: contain;
-}
-.ownBubble {
-	min-width: 60px;
-	max-width: 700px;
-	padding: 14px 18px;
-  margin: 6px 8px;
-	background-color: #5b5377;
-	border-radius: 16px 16px 0 16px;
-	border: 1px solid #443f56;
- 
-}
-.otherBubble {
-	min-width: 60px;
-	max-width: 700px;
-	padding: 14px 18px;
-  margin: 6px 8px;
-	background-color: #6C8EA4;
-	border-radius: 16px 16px 16px 0;
-	border: 1px solid #54788e;
-  
-}
-.own {
-	align-self: flex-end;
-}
-.other {
-	align-self: flex-start;
-}
-span.own,
-span.other{
-  font-size: 14px;
-  color: grey;
-}
+        font-family: "Avenir";
+      }
+      .bubbleWrapper {
+        padding: 0px 10px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+        align-self: flex-end;
+        color: #fff;
+        font-size: 13px;
+      }
+      .inlineContainer {
+        display: inline-flex;
+      }
+      .inlineContainer.own {
+        flex-direction: row-reverse;
+      }
+      .inlineIcon {
+        width: 20px;
+        object-fit: contain;
+      }
+      .ownBubble {
+        min-width: 60px;
+        max-width: 700px;
+        padding: 14px 18px;
+        margin: 6px 8px;
+        background-color: #5b5377;
+        border-radius: 16px 16px 0 16px;
+        border: 1px solid #443f56;
+      }
+      .otherBubble {
+        min-width: 60px;
+        max-width: 700px;
+        padding: 14px 18px;
+        margin: 6px 8px;
+        background-color: #6c8ea4;
+        border-radius: 16px 16px 16px 0;
+        border: 1px solid #54788e;
+      }
+      .own {
+        align-self: flex-end;
+      }
+      .other {
+        align-self: flex-start;
+      }
+      span.own,
+      span.other {
+        font-size: 11px;
+        color: grey;
+      }
+      .goleft {
+        margin-left: auto;
+      }
     </style>
   </head>
   <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid" style="margin-left: 1rem">
+        <a class="navbar-brand" href="/">AnoText</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mb-2 mb-lg-0 goleft">
+            <!-- <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li> -->
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about">About</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
     <div class="container">
+      <div style="margin: 2rem; font-size: 16px; text-align: center">
+        <p>Hi <span style="font-weight: 500; font-size: 18px">{{name}}</span>!</p>
+        <p>Here is your publicly shareable link:</p>
+        <div class="copytoclipboard">
+          <input
+            type="text"
+            id="copyText"
+            value="cooopy"
+          />
+          <button id="copyBtn"><i class="ph-copy"></i> Copy</button>
+        </div>
+      </div>
 
-
-     
       {% for key, value in chats.items() %}
-      <div style="margin: 2rem; box-shadow: rgba(3, 6, 7, 0.12) 4px 4px 8px 4px, rgba(14, 30, 37, 0.32) 4px 4px 40px 4px; margin-bottom: 4rem; border-radius: 0.5rem;">
+      <div
+        style="
+          margin: 0.4rem;
+          box-shadow: rgba(3, 6, 7, 0.12) 4px 4px 8px 4px,
+            rgba(14, 30, 37, 0.32) 4px 4px 40px 4px;
+          margin-bottom: 4rem;
+          border-radius: 0.5rem;
+        "
+      >
         <!-- <h1>Talking to {{key}}</h1> -->
-        <div class="chatboxes" style="max-height: 550px; overflow: auto;">
-        {% for k, val in value.items() %}
+        <div class="chatboxes" style="max-height: 400px; overflow: auto">
+          {% for k, val in value.items() %}
           <!-- <h2>{{k}}</h2> -->
           {% if me == val['sender'] %}
-        
+
           <div class="bubbleWrapper">
             <div class="inlineContainer own">
-             
-              <div class="ownBubble own">
-                {{val['message']}}
-              </div>
-            </div><span class="own">{{val['timestamp']}} ago</span>
+              <div class="ownBubble own">{{val['message']}}</div>
+            </div>
+            <span class="own">{{val['timestamp']}} ago</span>
           </div>
-          
+
           {% else %}
           <div class="bubbleWrapper">
             <div class="inlineContainer">
-              
-              <div class="otherBubble other">
-                {{val['message']}}
-              </div>
-            </div><span class="other">{{val['timestamp']}} ago</span>
+              <div class="otherBubble other">{{val['message']}}</div>
+            </div>
+            <span class="other">{{val['timestamp']}} ago</span>
           </div>
-          {% endif %} 
-        {% endfor %}
-          </div>
-        <form id="usrform" style="
-        padding: 1rem;" method="POST">
-        <textarea rows="3" cols="50" name="message" id="message" value="message" style="width: 100%;
-        box-sizing: border-box;"></textarea>
-        <br>
-        <button class="btn btn-primary" type="submit" name="send" value="{{key}}" >Send a message</button>
+          {% endif %} {% endfor %}
+        </div>
+        <form id="usrform" style="padding: 1rem" method="POST">
+          <textarea
+            rows="3"
+            cols="50"
+            name="message"
+            id="message"
+            value="message"
+            style="width: 100%; box-sizing: border-box"
+          ></textarea>
+          <br />
+          <button
+            class="btn btn-primary"
+            type="submit"
+            name="send"
+            value="{{key}}"
+          >
+            Send a message
+          </button>
         </form>
-        
       </div>
       {% endfor %}
     </div>
-    
+    <script>
+      const copyBtn = document.getElementById("copyBtn");
+      const copyText = document.getElementById("copyText");
+      copyText.value = "http://127.0.0.1:5000/" + "{{usertag}}";
+
+      copyBtn.onclick = () => {
+        copyText.select();
+        document.execCommand("copy");
+      };
+    </script>
     <script>
       var element = document.getElementsByClassName("chatboxes");
-      for(var i=0; i<element.length;i++){
+      for (var i = 0; i < element.length; i++) {
         element[i].scrollTop = element[i].scrollHeight;
       }
-      
     </script>
     <!-- <script type="text/javascript">
       window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
       </script> -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ"
+      crossorigin="anonymous"
+    ></script>
   </body>
-  
 </html>

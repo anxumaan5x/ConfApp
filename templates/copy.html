@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        button,
+        input {
+            padding: 10px;
+            border-radius: 10px;
+            outline: none;
+        }
+        
+        input {
+            cursor: default;
+            border: 1px solid #354757;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        input:focus {
+            border-color: #384f63;
+        }
+        
+        button {
+            cursor: pointer;
+            color: #fff;
+            background: #1b2c3a;
+            border: none;
+            margin-left: 10px;
+            transition: all 0.3s ease-in-out;
+            width: 4rem;
+        }
+        
+        button:hover {
+            background: #0d6efd;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="text" id="copyText" value="cooopy">
+    <button id="copyBtn"><i class="ph-copy"></i> Copy</button>
+
+    <script>
+        const copyBtn = document.getElementById('copyBtn')
+        const copyText = document.getElementById('copyText')
+
+        copyBtn.onclick = () => {
+            copyText.select();
+            document.execCommand('copy');
+        }
+    </script>
+</body>
+
+</html>
