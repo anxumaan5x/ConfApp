@@ -197,7 +197,7 @@ def callback():
         new_user=User(name=session['name'], google_id=session['google_id'])
         db.session.add(new_user)
         db.session.commit()
-    print('Requestor is ' + session['requestor'], flush=True)
+    # print('Requestor is ' + session['requestor'], flush=True)
     if session['requestor']:
         return redirect(session['requestor'])
     print("Tring to access " + '/' + session['google_id'], flush=True)
