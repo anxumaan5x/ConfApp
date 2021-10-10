@@ -20,10 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db=SQLAlchemy(app)
 import os.path
-if os.path.exists("db.sqlite3") is True:
-    pass
-else:
-    db.create_all()
+
 
 import os
 from flask import send_from_directory
