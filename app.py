@@ -17,7 +17,7 @@ from sqlalchemy.orm import backref
 app = Flask("Google Login App")
 app.secret_key = "ddsdadw"
 app.config['SQLALCHEMY_DATABASE_URI']=os.environ.get('DATABASE_URL')
-# app.config['SQLALCHEMY_DATABASE_URI']=DATABASE_URL
+# app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db=SQLAlchemy(app)
 import os.path
@@ -94,8 +94,8 @@ def get_chats(from_id, to_id):
     reversed_list.reverse()
     # my_dict={{}}
     chats_dict={}
-    # get_chat=Chat.query.filter(Chat.from_id.in_(my_list),Chat.to_id.in_(reversed_list)).order_by(Chat.time.asc()).all()
-    get_chat=Chat.query.filter(Chat.from_id.in_(my_list),Chat.to_id.in_(reversed_list)).order_by(Chat.time.asc())
+    get_chat=Chat.query.filter(Chat.from_id.in_(my_list),Chat.to_id.in_(reversed_list)).order_by(Chat.time.asc()).all()
+    # get_chat=Chat.query.filter(Chat.from_id.in_(my_list),Chat.to_id.in_(reversed_list)).order_by(Chat.time.asc())
     index=0
     for chat in get_chat:
         chats_dict[index]={}
@@ -117,12 +117,11 @@ def get_chats(from_id, to_id):
 
 #get all chats for one user
 def all_chats(to_id):
-    get_chat=Chat.query.filter_by(to_id=Chat.to_id).group_by(Chat.from_id)
+    # get_chat=Chat.query.filter_by(to_id=to_id).group_by(Chat.from_id).all()
     my_dict={}
     user_received_chats_from=[]
-    # print(get_chat)
-    for chat in get_chat:
-        user_received_chats_from.append(chat.from_id)
+    for value in db.session.query(Chat.from_id).distinct().filter_by(to_id=to_id):    
+        user_received_chats_from.append(value[0])
     for sender in user_received_chats_from:
         # print(f'Chats between {to_id} and {sender}')
         my_dict[sender]=get_chats(sender, to_id)        
