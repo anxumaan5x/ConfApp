@@ -155,7 +155,7 @@ def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:
             session['requestor']=request.path
-            print('Requestor: ' + session['requestor'], flush=True)
+            # print('Requestor: ' + session['requestor'], flush=True)
             return redirect('/login') # Authorization required
         else:
             return function(*args, **kwargs)
@@ -198,7 +198,7 @@ def callback():
         db.session.add(new_user)
         db.session.commit()
     # print('Requestor is ' + session['requestor'], flush=True)
-    if session['requestor']:
+    if "requestor" in session:
         return redirect(session['requestor'])
     print("Tring to access " + '/' + session['google_id'], flush=True)
     my_id=num_encode(int(session['google_id']))
