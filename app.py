@@ -94,7 +94,8 @@ def get_chats(from_id, to_id):
     reversed_list.reverse()
     # my_dict={{}}
     chats_dict={}
-    get_chat=Chat.query.filter(Chat.from_id.in_(my_list),Chat.to_id.in_(reversed_list)).order_by(Chat.time.asc()).all()
+    # get_chat=Chat.query.filter(Chat.from_id.in_(my_list),Chat.to_id.in_(reversed_list)).order_by(Chat.time.asc()).all()
+    get_chat=Chat.query.filter(Chat.from_id.in_(my_list),Chat.to_id.in_(reversed_list)).order_by(Chat.time.asc()).distinct()
     index=0
     for chat in get_chat:
         chats_dict[index]={}
@@ -116,7 +117,7 @@ def get_chats(from_id, to_id):
 
 #get all chats for one user
 def all_chats(to_id):
-    get_chat=Chat.query.filter_by(to_id=to_id).group_by(Chat.from_id).all()
+    get_chat=Chat.query.filter_by(to_id=to_id).group_by(Chat.from_id).distinct()
     my_dict={}
     user_received_chats_from=[]
     # print(get_chat)
