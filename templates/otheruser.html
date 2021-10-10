@@ -119,8 +119,13 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mb-2 mb-lg-0 goleft">
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li> -->
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/logout"
+              >Logout</a
+            >
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/about">About</a>
@@ -141,7 +146,7 @@
     </div>
 
     <div
-      style="margin: 2rem; box-shadow: rgba(3, 6, 7, 0.12) 4px 4px 8px 4px, rgba(14, 30, 37, 0.32) 4px 4px 40px 4px; margin-bottom: 4rem; border-radius: 0.5rem;">
+      style="margin: 0.4rem; box-shadow: rgba(3, 6, 7, 0.12) 4px 4px 8px 4px, rgba(14, 30, 37, 0.32) 4px 4px 40px 4px; margin-bottom: 4rem; border-radius: 0.5rem;">
       <!-- <h1>Talking to {{key}}</h1> -->
       <div id="chatbox" style=" max-height: 800px; overflow: auto;">
         {% for k, val in chats.items() %}
@@ -174,7 +179,7 @@
         box-sizing: border-box;"></textarea>
         <br>
         <a href='' id='report' class="btn btn-danger">Report User</a>
-        <button class="btn btn-primary" id="sendchat" type="submit" name="send" value="">Send a message</button>
+        <button class="btn btn-primary" id="sendchat" type="submit" name="send" value="" style="float: right;">Send a message</button>
       </form>
 
     </div>
