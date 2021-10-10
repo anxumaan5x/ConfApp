@@ -269,13 +269,29 @@ def user_dashboard(userstr):
     # print(chats)
 
 @app.route('/report/<num>')
+@login_is_required
 def report(num):
     try:
         user_id=str(int(num))
     except:
         user_id=str(num_decode(num))
+    
+    timenow = datetime.utcnow()
+    latestreported=Report.query.filter_by(reported_by=session['google_id'], reported=user_id).order_by(Report.id.desc()).first()
+    try:
+        timedifference = timedelta.Timedelta(timenow - latestreported.time)
+        if timedifference.total.hours<1:
+            return "You must wait 1 hour before you can report the user again."
+    except:
+        pass
+    
     reports=Report(reported_by=session['google_id'], reported=user_id)
     db.session.add(reports)
+    db.session.commit()
+    my_list=[session['google_id'], user_id]
+    reversed_list=my_list
+    reversed_list.reverse()
+    db.session.query(Chat).filter(Chat.from_id.in_(my_list),Chat.to_id.in_(reversed_list)).delete()
     db.session.commit()
     return "Reported"
 
@@ -302,3 +318,11 @@ def req():
     return f'<h1>Requestor is {requestor}</h1>'
 if __name__ == "__main__":
     app.run()
+
+
+
+# latestreported=Report.query.filter_by(reported_by='112342845020655906267', reported='117634559943903595921').order_by(Report.id.desc()).first()
+
+# db.session.query(Report).delete()
+
+# db.session.commit()
