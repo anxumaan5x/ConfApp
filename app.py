@@ -150,14 +150,12 @@ flow = Flow.from_client_secrets_file(
 #             return function()
 #     return wrapper
 
-requestor = ''
 
 def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:
-            global requestor
-            requestor=request.path
-            print('Requestor: ' + requestor, flush=True)
+            session['requestor']=request.path
+            print('Requestor: ' + session['requestor'], flush=True)
             return redirect('/login') # Authorization required
         else:
             return function(*args, **kwargs)
@@ -199,10 +197,9 @@ def callback():
         new_user=User(name=session['name'], google_id=session['google_id'])
         db.session.add(new_user)
         db.session.commit()
-    global requestor
-    print('Requestor is ' + requestor, flush=True)
-    if requestor:
-        return redirect(requestor)
+    print('Requestor is ' + session['requestor'], flush=True)
+    if session['requestor']:
+        return redirect(session['requestor'])
     print("Tring to access " + '/' + session['google_id'], flush=True)
     my_id=num_encode(int(session['google_id']))
     print(my_id, flush=True)
@@ -317,8 +314,7 @@ def copy():
 
 @app.route("/req")
 def req():
-    global requestor
-    return f'<h1>Requestor is {requestor}</h1>'
+    return f'<h1>Requestor is {session["requestor"]}</h1>'
 if __name__ == "__main__":
     app.run()
 
