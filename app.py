@@ -117,7 +117,7 @@ def get_chats(from_id, to_id):
 
 #get all chats for one user
 def all_chats(to_id):
-    get_chat=Chat.query.filter_by(to_id=to_id).group_by(Chat.from_id)
+    get_chat=Chat.query.filter_by(to_id=Chat.to_id).group_by(Chat.from_id)
     my_dict={}
     user_received_chats_from=[]
     # print(get_chat)
