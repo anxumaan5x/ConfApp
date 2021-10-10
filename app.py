@@ -16,7 +16,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
 app = Flask("Google Login App")
 app.secret_key = "ddsdadw"
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///db.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI']='postgres://nhyjlcmoiwvwdd:c9dd671f56df9d696bc7ce936d0f3d5e962020d6af7f23899b3cff66cef3b59b@ec2-44-198-151-32.compute-1.amazonaws.com:5432/d2r4c5ild1c41l'
 # app.config['SQLALCHEMY_DATABASE_URI']=DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db=SQLAlchemy(app)
