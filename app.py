@@ -174,9 +174,9 @@ def login():
 @app.route("/callback")
 def callback():
     flow.fetch_token(authorization_response=request.url)
-
-    if not session["state"] == request.args["state"]:
-        abort(500)  # State does not match!
+    if "state" in session:
+        if not session["state"] == request.args["state"]:
+            abort(500)  # State does not match!
 
     credentials = flow.credentials
     request_session = requests.session()
