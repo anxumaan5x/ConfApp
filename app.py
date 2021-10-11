@@ -292,7 +292,8 @@ def report(num):
     reversed_list=my_list
     reversed_list.reverse()
     getchat=Chat.query.filter((Chat.from_id == user_id) | (Chat.from_id == session['google_id']),(Chat.to_id == session['google_id']) | (Chat.to_id == user_id)).all()
-    db.session.delete(getchat)
+    for chat in getchat:
+        db.session.delete(chat)
     db.session.commit()
     return "Reported"
 
