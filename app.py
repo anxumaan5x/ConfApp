@@ -176,11 +176,11 @@ def callback():
     try:
         flow.fetch_token(authorization_response=request.url)
     except:
-        return redirect('/login')
+        return redirect('/logout')
     if "state" in session:
         if not session["state"] == request.args["state"]:
             # abort(500)  # State does not match!
-            return redirect('/login')
+            return redirect('/logout')
 
     credentials = flow.credentials
     request_session = requests.session()
@@ -195,7 +195,7 @@ def callback():
     
     session["google_id"] = id_info.get("sub")
     session["name"] = id_info.get("name")
-    print(session["name"], session["google_id"], flush=True)
+    # print(session["name"], session["google_id"], flush=True)
     query_user=User.query.filter_by(google_id=session['google_id']).first()
     if query_user is None:
         new_user=User(name=session['name'], google_id=session['google_id'])
@@ -204,9 +204,9 @@ def callback():
     # print('Requestor is ' + session['requestor'], flush=True)
     if "requestor" in session:
         return redirect(session['requestor'])
-    print("Tring to access " + '/' + session['google_id'], flush=True)
+    # print("Tring to access " + '/' + session['google_id'], flush=True)
     my_id=num_encode(int(session['google_id']))
-    print(my_id, flush=True)
+    # print(my_id, flush=True)
     return redirect('/' + my_id)
 
 
@@ -244,7 +244,7 @@ def user_dashboard(userstr):
             newchat=Chat(message=message, from_id=session["google_id"], to_id=sendto)
             db.session.add(newchat)
             db.session.commit()
-            print('Redirect to user id ' + userstr, flush=True)
+            # print('Redirect to user id ' + userstr, flush=True)
             return redirect(url_for('user_dashboard', userstr=userstr))
         chats=all_chats(to_id=session["google_id"])
         return render_template('dashboard.html', chats = chats, me=session["google_id"], name=gname, usertag=userstr)
@@ -262,7 +262,7 @@ def user_dashboard(userstr):
             sendto=request.form['send']
             sendto=sendto.replace('#', '')
             sendtoid=str(num_decode(sendto))
-            print(type(sendtoid) ,sendtoid, flush=True)
+            # print(type(sendtoid) ,sendtoid, flush=True)
             # print(sendto, flush=True)
             newchat=Chat(message=message, from_id=session["google_id"], to_id=sendtoid)
             db.session.add(newchat)
