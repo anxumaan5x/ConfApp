@@ -228,6 +228,7 @@ def index():
 @app.route('/<userstr>', methods=['GET', 'POST'])
 @login_is_required
 def user_dashboard(userstr):
+    userstr=userstr.replace('#', '')
     user_id=str(num_decode(userstr))
     count=Report.query.filter_by(reported=session['google_id']).count()
     if count>5:
