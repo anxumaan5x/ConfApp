@@ -239,6 +239,7 @@ def user_dashboard(userstr):
         if request.method == 'POST':
             message = request.form['message']
             sendto=request.form['send']
+            sendto=sendto.replace('#', '')
             # print(sendto, flush=True)
             newchat=Chat(message=message, from_id=session["google_id"], to_id=sendto)
             db.session.add(newchat)
@@ -259,6 +260,7 @@ def user_dashboard(userstr):
         if request.method == 'POST':
             message = request.form['message']
             sendto=request.form['send']
+            sendto=sendto.replace('#', '')
             sendtoid=str(num_decode(sendto))
             print(type(sendtoid) ,sendtoid, flush=True)
             # print(sendto, flush=True)
