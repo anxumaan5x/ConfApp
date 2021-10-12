@@ -176,7 +176,8 @@ def callback():
     flow.fetch_token(authorization_response=request.url)
     if "state" in session:
         if not session["state"] == request.args["state"]:
-            abort(500)  # State does not match!
+            # abort(500)  # State does not match!
+            return redirect('/login')
 
     credentials = flow.credentials
     request_session = requests.session()
